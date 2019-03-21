@@ -9,24 +9,54 @@ output:
 
 ## Loading and preprocessing the data
 
-```{r}
+
+```r
 # load packages
 library(dplyr)
-library(ggplot2)
+```
 
+```
+## Warning: package 'dplyr' was built under R version 3.5.2
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
+library(ggplot2)
+```
+
+```
+## Warning: package 'ggplot2' was built under R version 3.5.2
+```
+
+```r
 # read in the data
 raw <- read.csv("activity.csv")
 
 # add date
 raw$date_string <- raw$date
 raw$date <- as.Date(raw$date)
-
 ```
 
 ## What is mean total number of steps taken per day?
 
-```{r}
 
+```r
 # compute total number of steps by date
 total_steps <- raw %>% group_by(date_string) %>% summarize(sum(steps, na.rm = TRUE))
 
@@ -39,15 +69,16 @@ median_total_steps <- median(total_steps_vector, na.rm = TRUE)
 
 # histogram of daily total steps
 hist(total_steps_vector, main = "Daily Total Steps", xlab = "Steps") 
-
-
 ```
 
-### The mean total number of steps taken per days is `r mean_total_steps` and the median is `r median_total_steps`
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+
+### The mean total number of steps taken per days is 9354.2295082 and the median is 10395
 
 ## What is the average daily activity pattern?
 
-```{r}
+
+```r
 # compute mean number of steps by time interval
 mean_steps <- raw %>% group_by(as.factor(interval)) %>% summarize(mean(steps, na.rm = TRUE))
 
@@ -63,12 +94,14 @@ plot(mean_steps_vector ~ intervals, type = "l", col = "blue", lwd = 2,
       main = "Average Daily Activity Pattern", xlab = "Interval", ylab = "mean steps")
 ```
 
-### This person took the maximum number of steps, on average, at time interval `r max_interval`.
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+
+### This person took the maximum number of steps, on average, at time interval 835.
 
 ## Imputing missing values
 
-```{r}
 
+```r
 # calculate number of missing values
 total_missing <- sum(is.na(raw$steps))
 
@@ -89,20 +122,20 @@ median_total_steps <- median(total_steps_vector)
 
 # histogram of daily total steps
 hist(total_steps_vector, main = "Daily Total Steps", xlab = "Steps") 
-
-
 ```
 
-### There are `r total_missing` missing values in the data. These were filled in with the mean of the steps for that 5-minute interval.
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
 
-### After filling the missing values, the mean total number of steps taken per days is `r mean_total_steps` and the median is `r median_total_steps`. These are both higher than the mean and median calculated without filling in the missing values.
+### There are 2304 missing values in the data. These were filled in with the mean of the steps for that 5-minute interval.
+
+### After filling the missing values, the mean total number of steps taken per days is 1.0766189\times 10^{4} and the median is 1.0766189\times 10^{4}. These are both higher than the mean and median calculated without filling in the missing values.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
 The plots indicate that there's a lot more activity in the morning on weekdays than on weekends, but less activity during work hours.
 
-```{r warnings = FALSE}
 
+```r
 # add factor variable day_type containing weekend or weekday
 filled$day_type <- ifelse(weekdays(filled$date) %in% c("Saturday", "Sunday"), "weekend", "weekday") %>%             as.factor
 
@@ -123,3 +156,5 @@ ggplot(mean_steps, aes(x = as.numeric(interval), y = steps, col = day_type)) +
   xlab("Interval") +
   ylab("Number of steps")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
